@@ -1,0 +1,14 @@
+{
+  "name": "island-wealth-hypercore-test",
+  "version": "1.0.0",
+  "description": "Test app for Island Wealth form with Hypercore backend",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "hypercore": "^10.37.0",
+    "ajv": "^8.12.0"
+  }
+}

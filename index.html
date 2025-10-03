@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Island Wealth - Hypercore Test</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>
+    
+    <style>
+        :root {
+            --island-black: #0a0a0a;
+            --island-dark: #1a1a1a;
+            --island-gold: #FFD700;
+            --island-gold-dim: #B8860B;
+            --island-green: #2d5016;
+            --island-green-light: #4a7c25;
+            --island-white: #f5f5f5;
+            --island-gray: #888;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--island-black) 0%, var(--island-green) 50%, var(--island-black) 100%);
+            background-attachment: fixed;
+            color: var(--island-white);
+            font-family: 'Inter', 'Roboto', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40" opacity="0.05">🌴</text></svg>');
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2), 0 0.5rem 2rem rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--island-gold);
+            padding-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: "🌴";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 48px;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        .header h1 {
+            color: var(--island-gold);
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            color: var(--island-white);
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .island-field {
+            margin-bottom: 1.5rem;
+        }
+
+        .island-field label,
+        .island-field .control-label {
+            color: var(--island-gold) !important;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+
+        .island-field input[type="text"],
+        .island-field textarea {
+            background: rgba(0, 0, 0, 0.6) !important;
+            border: 2px solid rgba(255, 215, 0, 0.3) !important;
+            color: var(--island-white) !important;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .island-field textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .island-field input:focus,
+        .island-field textarea:focus {
+            outline: none !important;
+            border-color: var(--island-gold) !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+        }
+
+        .island-field input::placeholder,
+        .island-field textarea::placeholder {
+            color: var(--island-gray);
+            opacity: 0.7;
+        }
+
+        .gold-accent input {
+            border-color: var(--island-gold) !important;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--island-gold), var(--island-gold-dim)) !important;
+            border: none !important;
+            color: var(--island-black) !important;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5) !important;
+        }
+
+        .btn-secondary {
+            background: transparent !important;
+            border: 2px solid var(--island-gold) !important;
+            color: var(--island-gold) !important;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.1) !important;
+        }
+
+        .success-message {
+            background: rgba(74, 124, 37, 0.2);
+            border: 2px solid var(--island-green-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .success-message h3 {
+            color: var(--island-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            background: rgba(139, 0, 0, 0.2);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .records-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .records-section h2 {
+            color: var(--island-gold);
+            margin-bottom: 1rem;
+        }
+
+        .record-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .record-card h4 {
+            color: var(--island-gold);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .record-card pre {
+            color: var(--island-white);
+            margin: 0;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .hypercore-info {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .hypercore-info strong {
+            color: var(--island-gold);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useEffect } = React;
+        const Form = JSONSchemaForm.default;
+
+        const schema = {
+            "type": "object",
+            "title": "Keet Bots API Early Access",
+            "description": "Sign up to be enrolled in Keet Bots Early Access! Build your bots using the Bot API. We can't wait to see what you build!",
+            "properties": {
+                "keet_username": {
+                    "type": "string",
+                    "title": "Your Keet username"
+                },
+                "github": {
+                    "type": "string",
+                    "title": "Your GH"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "What bots do you want to build?"
+                }
+            },
+            "required": ["keet_username", "description"]
+        };
+
+        const uiSchema = {
+            "ui:classNames": "island-wealth-form",
+            "keet_username": {
+                "ui:autofocus": true,
+                "ui:placeholder": "Your answer",
+                "ui:classNames": "island-field gold-accent"
+            },
+            "github": {
+                "ui:placeholder": "Your answer",
+                "ui:classNames": "island-field"
+            },
+            "description": {
+                "ui:widget": "textarea",
+                "ui:placeholder": "Your answer",
+                "ui:options": {
+                    "rows": 4
+                },
+                "ui:classNames": "island-field island-textarea"
+            }
+        };
+
+        function App() {
+            const [formData, setFormData] = useState({});
+            const [submitting, setSubmitting] = useState(false);
+            const [message, setMessage] = useState(null);
+            const [records, setRecords] = useState([]);
+            const [hypercoreInfo, setHypercoreInfo] = useState(null);
+
+            const loadRecords = async () => {
+                try {
+                    const res = await fetch('/api/records');
+                    const data = await res.json();
+                    if (data.success) {
+                        setRecords(data.records);
+                        console.log('📚 Loaded records:', data.records);
+                    }
+                } catch (error) {
+                    console.error('Error loading records:', error);
+                }
+            };
+
+            const loadHypercoreInfo = async () => {
+                try {
+                    const res = await fetch('/api/info');
+                    const data = await res.json();
+                    setHypercoreInfo(data);
+                    console.log('📊 Hypercore info:', data);
+                } catch (error) {
+                    console.error('Error loading hypercore info:', error);
+                }
+            };
+
+            useEffect(() => {
+                loadRecords();
+                loadHypercoreInfo();
+            }, []);
+
+            const handleSubmit = async ({formData}) => {
+                console.log('📝 Submitting form data:', formData);
+                setSubmitting(true);
+                setMessage(null);
+
+                try {
+                    const response = await fetch('/api/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        console.log('✅ Submission successful:', result);
+                        setMessage({
+                            type: 'success',
+                            text: `Success! Record #${result.record.id} added to Hypercore. Total records: ${result.totalRecords}`
+                        });
+                        setFormData({});
+                        await loadRecords();
+                        await loadHypercoreInfo();
+                    } else {
+                        console.error('❌ Validation failed:', result.errors);
+                        setMessage({
+                            type: 'error',
+                            text: 'Validation failed: ' + JSON.stringify(result.errors, null, 2)
+                        });
+                    }
+                } catch (error) {
+                    console.error('❌ Error submitting:', error);
+                    setMessage({
+                        type: 'error',
+                        text: 'Error: ' + error.message
+                    });
+                } finally {
+                    setSubmitting(false);
+                }
+            };
+
+            return React.createElement('div', { className: 'container' },
+                React.createElement('div', { className: 'header' },
+                    React.createElement('h1', null, schema.title),
+                    React.createElement('p', null, schema.description)
+                ),
+
+                hypercoreInfo && React.createElement('div', { className: 'hypercore-info' },
+                    React.createElement('strong', null, '💾 Hypercore Info'),
+                    React.createElement('div', null, `Records: ${hypercoreInfo.length}`),
+                    React.createElement('div', null, `Key: ${hypercoreInfo.key.slice(0, 32)}...`)
+                ),
+
+                message && React.createElement('div', {
+                    className: message.type === 'success' ? 'success-message' : 'error-message'
+                },
+                    React.createElement('h3', null, 
+                        message.type === 'success' ? '✅ Success!' : '❌ Error'
+                    ),
+                    React.createElement('pre', null, message.text)
+                ),
+
+                React.createElement(Form, {
+                    schema: schema,
+                    uiSchema: uiSchema,
+                    formData: formData,
+                    onChange: ({formData}) => setFormData(formData),
+                    onSubmit: handleSubmit
+                },
+                    React.createElement('div', { style: { textAlign: 'right', marginTop: '1rem' } },
+                        React.createElement('button', {
+                            type: 'submit',
+                            className: 'btn-primary',
+                            disabled: submitting,
+                            style: { display: 'inline-block' }
+                        }, submitting ? 'Submitting...' : 'Submit to Hypercore')
+                    )
+                ),
+
+                React.createElement('div', { className: 'records-section' },
+                    React.createElement('h2', null, `📚 Stored Records (${records.length})`),
+                    React.createElement('button', {
+                        className: 'btn-secondary',
+                        onClick: loadRecords,
+                        style: { marginBottom: '1rem' }
+                    }, '🔄 Refresh Records'),
+                    
+                    records.length === 0 ?
+                        React.createElement('p', { style: { textAlign: 'center', opacity: 0.7 } }, 
+                            'No records yet. Submit the form to add data to Hypercore.'
+                        ) :
+                        records.map((record, index) =>
+                            React.createElement('div', { key: index, className: 'record-card' },
+                                React.createElement('h4', null, 
+                                    `Record #${record.id} - ${new Date(record.timestamp).toLocaleString()}`
+                                ),
+                                React.createElement('pre', null, 
+                                    JSON.stringify(record.data, null, 2)
+                                )
+                            )
+                        )
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
