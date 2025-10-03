@@ -17,7 +17,7 @@ PearForms is a decentralized form solution that stores data in **Hypercore** ins
 ### The Problem
 We wanted to add **customized stylesheets** to Ryan's [schema-sheets-cli](https://github.com/ryanramage/schema-sheets-cli) app:
 
-- ✅ We created custom stylesheets (Island Wealth theme)
+- ✅ We created custom stylesheets theme)
 - ✅ We submitted a [Pull Request](https://github.com/ryanramage/schema-sheets-cli/pull/2) to include these stylesheets
 - ❌ **Issue discovered:** Our customized stylesheet was not being picked up by the schema-sheets-cli app
 
@@ -28,7 +28,7 @@ To isolate and test the stylesheet functionality, we created **this test app** c
 - Creates a Hypercore for local data storage
 - Provides a simple HTML form to add records to PearForms
 - Displays all records stored in the Hypercore
-- Shows our custom Island Wealth stylesheet in action
+- Shows our custom stylesheet in action
 - Allows querying the Hypercore via Python/Jupyter (Pandas integration)
 
 **Conclusion:** ✅ **The stylesheets work perfectly.**
@@ -64,7 +64,7 @@ Open your browser to: **http://localhost:3000**
 ```
 test_ui_node/
 ├── server.js           # Node.js server with Hypercore backend
-├── index.html          # Island Wealth themed form UI
+├── index.html          # Custom themed form UI
 ├── storage/            # Hypercore data storage (auto-generated)
 │   └── schema_sheets_core/
 ├── package.json
@@ -107,7 +107,7 @@ See the included Jupyter notebook for a complete example.
 
 ## 🎨 Custom Styling
 
-The **Island Wealth theme** includes:
+The **Custom theme Box Baby simulates a Pear Baby sleeping in a box at night and** includes:
 - Dark gradient background (black → green → black)
 - Gold accents and borders
 - Palm tree emoji decorations 🌴

@@ -153,7 +153,7 @@ const server = createServer(async (req, res) => {
 const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`
-🌴 Island Wealth Test Server Running
+🌴 Baby in a Box Test Server Running
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 URL: http://localhost:${PORT}
 💾 Hypercore: schema_sheets_core

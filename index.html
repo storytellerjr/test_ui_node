@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Island Wealth - Hypercore Test</title>
+    <title>Box Baby Theme - Hypercore Test</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -12,20 +12,20 @@
     
     <style>
         :root {
-            --island-black: #0a0a0a;
-            --island-dark: #1a1a1a;
-            --island-gold: #FFD700;
-            --island-gold-dim: #B8860B;
-            --island-green: #2d5016;
-            --island-green-light: #4a7c25;
-            --island-white: #f5f5f5;
-            --island-gray: #888;
+            --box-black: #0a0a0a;
+            --box-dark: #1a1a1a;
+            --box-gold: #FFD700;
+            --box-gold-dim: #B8860B;
+            --box-green: #2d5016;
+            --box-green-light: #4a7c25;
+            --box-white: #f5f5f5;
+            --box-gray: #888;
         }
 
         body {
-            background: linear-gradient(135deg, var(--island-black) 0%, var(--island-green) 50%, var(--island-black) 100%);
+            background: linear-gradient(135deg, var(--box-black) 0%, var(--box-green) 50%, var(--box-black) 100%);
             background-attachment: fixed;
-            color: var(--island-white);
+            color: var(--box-white);
             font-family: 'Inter', 'Roboto', Arial, sans-serif;
             min-height: 100vh;
             margin: 0;
@@ -61,7 +61,7 @@
         .header {
             margin-bottom: 2rem;
             text-align: center;
-            border-bottom: 2px solid var(--island-gold);
+            border-bottom: 2px solid var(--box-gold);
             padding-bottom: 1.5rem;
             position: relative;
         }
@@ -77,7 +77,7 @@
         }
 
         .header h1 {
-            color: var(--island-gold);
+            color: var(--box-gold);
             margin: 0 0 0.5rem 0;
             font-weight: 700;
             letter-spacing: 2px;
@@ -86,19 +86,19 @@
         }
 
         .header p {
-            color: var(--island-white);
+            color: var(--box-white);
             margin: 0;
             font-size: 1rem;
             opacity: 0.9;
         }
 
-        .island-field {
+        .box-field {
             margin-bottom: 1.5rem;
         }
 
-        .island-field label,
-        .island-field .control-label {
-            color: var(--island-gold) !important;
+        .box-field label,
+        .box-field .control-label {
+            color: var(--box-gold) !important;
             font-weight: 600;
             font-size: 1rem;
             margin-bottom: 0.5rem;
@@ -106,11 +106,11 @@
             letter-spacing: 0.5px;
         }
 
-        .island-field input[type="text"],
-        .island-field textarea {
+        .box-field input[type="text"],
+        .box-field textarea {
             background: rgba(0, 0, 0, 0.6) !important;
             border: 2px solid rgba(255, 215, 0, 0.3) !important;
-            color: var(--island-white) !important;
+            color: var(--box-white) !important;
             padding: 0.75rem 1rem;
             border-radius: 8px;
             font-size: 1rem;
@@ -119,34 +119,34 @@
             font-family: inherit;
         }
 
-        .island-field textarea {
+        .box-field textarea {
             resize: vertical;
             min-height: 120px;
         }
 
-        .island-field input:focus,
-        .island-field textarea:focus {
+        .box-field input:focus,
+        .box-field textarea:focus {
             outline: none !important;
-            border-color: var(--island-gold) !important;
+            border-color: var(--box-gold) !important;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
             background: rgba(0, 0, 0, 0.8) !important;
         }
 
-        .island-field input::placeholder,
-        .island-field textarea::placeholder {
-            color: var(--island-gray);
+        .box-field input::placeholder,
+        .box-field textarea::placeholder {
+            color: var(--box-gray);
             opacity: 0.7;
         }
 
         .gold-accent input {
-            border-color: var(--island-gold) !important;
+            border-color: var(--box-gold) !important;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--island-gold), var(--island-gold-dim)) !important;
+            background: linear-gradient(135deg, var(--box-gold), var(--box-gold-dim)) !important;
             border: none !important;
-            color: var(--island-black) !important;
+            color: var(--box-black) !important;
             padding: 0.75rem 2rem;
             border-radius: 8px;
             font-weight: 700;
@@ -165,8 +165,8 @@
 
         .btn-secondary {
             background: transparent !important;
-            border: 2px solid var(--island-gold) !important;
-            color: var(--island-gold) !important;
+            border: 2px solid var(--box-gold) !important;
+            color: var(--box-gold) !important;
             padding: 0.75rem 2rem;
             border-radius: 8px;
             font-weight: 600;
@@ -180,7 +180,7 @@
 
         .success-message {
             background: rgba(74, 124, 37, 0.2);
-            border: 2px solid var(--island-green-light);
+            border: 2px solid var(--box-green-light);
             padding: 1.5rem;
             border-radius: 8px;
             text-align: center;
@@ -188,7 +188,7 @@
         }
 
         .success-message h3 {
-            color: var(--island-gold);
+            color: var(--box-gold);
             margin-bottom: 0.5rem;
         }
 
@@ -208,7 +208,7 @@
         }
 
         .records-section h2 {
-            color: var(--island-gold);
+            color: var(--box-gold);
             margin-bottom: 1rem;
         }
 
@@ -221,13 +221,13 @@
         }
 
         .record-card h4 {
-            color: var(--island-gold);
+            color: var(--box-gold);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
 
         .record-card pre {
-            color: var(--island-white);
+            color: var(--box-white);
             margin: 0;
             font-size: 0.85rem;
             overflow-x: auto;
@@ -243,7 +243,7 @@
         }
 
         .hypercore-info strong {
-            color: var(--island-gold);
+            color: var(--box-gold);
         }
     </style>
 </head>
@@ -276,15 +276,15 @@
         };
 
         const uiSchema = {
-            "ui:classNames": "island-wealth-form",
+            "ui:classNames": "box-baby-form",
             "keet_username": {
                 "ui:autofocus": true,
                 "ui:placeholder": "Your answer",
-                "ui:classNames": "island-field gold-accent"
+                "ui:classNames": "box-field gold-accent"
             },
             "github": {
                 "ui:placeholder": "Your answer",
-                "ui:classNames": "island-field"
+                "ui:classNames": "box-field"
             },
             "description": {
                 "ui:widget": "textarea",
@@ -292,7 +292,7 @@
                 "ui:options": {
                     "rows": 4
                 },
-                "ui:classNames": "island-field island-textarea"
+                "ui:classNames": "box-field box-textarea"
             }
         };
 
