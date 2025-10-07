@@ -2,3 +2,20 @@ node_modules/
 storage/
 .DS_Store
 *.log
+
+# Old/backup files - not needed for production
+index-old*.js
+index-simple.js
+index-v2.js
+worker-old*.js
+test-simple.html
+
+# Images/screenshots - keeping PNG files for documentation
+*.jpg
+*.jpeg
+
+# Development artifacts
+.vscode/
+.idea/
+*.tmp
+*.temp

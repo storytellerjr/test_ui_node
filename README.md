@@ -4,34 +4,31 @@
 
 Own your data. Unstoppable. Built on [schema-sheets-cli](https://github.com/ryanramage/schema-sheets-cli) by [@ryanramage](https://github.com/ryanramage).
 
+**✨ NEW: Now supports both Pear v1 and v2! Mobile-responsive design included.**
+
 ---
 
 ## 🎯 What is PearForms?
 
 PearForms is a decentralized form solution that stores data in **Hypercore** instead of traditional cloud databases. Style it however you want, own your data completely.
 
----
+**Features:**
+- 🌐 **Dual-compatible:** Works with both Pear v1 (HTTP) and v2 (Worker messaging)
+- ⚡ **Worker-powered:** Includes dedicated worker.js for Pear v2 backend processing
+- 📱 **Responsive:** Mobile and desktop optimized
+- 🎨 **Box Baby Theme:** Custom gold/black/green styling with palm trees
+- 🔒 **P2P Storage:** Data stored locally in Hypercore
+- ✅ **JSON Schema Validation:** Built-in form validation
 
-## 🛠️ Background & Purpose
+## 📸 Screenshots
 
-### The Problem
-We wanted to add **customized stylesheets** to Ryan's [schema-sheets-cli](https://github.com/ryanramage/schema-sheets-cli) app:
+**Desktop Form View:**
+![PearForm Desktop](show%20Pearform1.png)
 
-- ✅ We created custom stylesheets theme)
-- ✅ We submitted a [Pull Request](https://github.com/ryanramage/schema-sheets-cli/pull/2) to include these stylesheets
-- ❌ **Issue discovered:** Our customized stylesheet was not being picked up by the schema-sheets-cli app
+**Mobile/Responsive View:**
+![PearForm Mobile](show%20pearform2.png)
 
-### The Solution: `test_ui_node`
-To isolate and test the stylesheet functionality, we created **this test app** called `test_ui_node`.
-
-**What it does:**
-- Creates a Hypercore for local data storage
-- Provides a simple HTML form to add records to PearForms
-- Displays all records stored in the Hypercore
-- Shows our custom stylesheet in action
-- Allows querying the Hypercore via Python/Jupyter (Pandas integration)
-
-**Conclusion:** ✅ **The stylesheets work perfectly.**
+*The Box Baby theme features a dark gradient background with gold accents, palm tree decorations, and glassmorphism effects that work beautifully on both desktop and mobile devices.*
 
 ---
 
@@ -40,6 +37,7 @@ To isolate and test the stylesheet functionality, we created **this test app** c
 ### Prerequisites
 - Node.js (v18+)
 - npm
+- For Pear v2: `pear` CLI tool
 
 ### Installation
 
@@ -48,6 +46,90 @@ git clone https://github.com/storytellerjr/test_ui_node.git
 cd test_ui_node
 npm install
 ```
+
+### Running the Application
+
+**Pear v1 (HTTP Server):**
+```bash
+npm run start:v1
+# or: npm start
+```
+Then open: http://localhost:3000
+
+**Pear v2 (Desktop App with Worker Piping):**
+```bash
+npm run start:v2
+# or: pear run -d .
+```
+
+Both versions use the same Hypercore storage and are fully compatible!
+
+---
+
+## 🔧 Pear v2 Worker Piping Implementation
+
+### Architecture Comparison
+
+**Pear v1 (HTTP):**
+```
+index.html ↔ fetch('/api/...') ↔ server.js ↔ Hypercore
+```
+
+**Pear v2 (Worker Messaging):**
+```
+index.html ↔ Pear.send() ↔ worker.js ↔ Hypercore
+```
+
+### Message Flow
+
+1. **Frontend sends message:**
+   ```javascript
+   Pear.send({ action: 'submit', data: formData, id: 1 })
+   ```
+
+2. **Worker receives message:**
+   ```javascript
+   Pear.messages(async (message) => {
+     const { action, data, id } = message
+     // Process action, validate, save to Hypercore
+   })
+   ```
+
+3. **Worker responds:**
+   ```javascript
+   Pear.message({ id: 1, success: true, record: {...} })
+   ```
+
+4. **Frontend receives response:**
+   ```javascript
+   Pear.messages((response) => {
+     // Handle response based on ID
+   })
+   ```
+
+### How to Verify Piping Works
+
+**Console Output Differences:**
+- **V1:** `🌐 FRONTEND: Using HTTP fetch`
+- **V2:** `🌐 FRONTEND: Using Pear Worker` + worker message logs
+
+**Network Tab:**
+- **V1:** Shows HTTP requests to `/api/*` endpoints
+- **V2:** **NO network requests** - all communication via worker messages
+
+### Key Files for v2 Piping
+
+- `index.js` - Pear v2 entry point that starts worker and view
+- `worker.js` - **Dedicated backend worker** using `Pear.messages()`/`Pear.message()` for all Hypercore operations
+- `index.html` - Auto-detects v2 and uses `Pear.send()`/`Pear.messages()` to communicate with worker
+
+**The worker.js handles all backend logic including:**
+- Hypercore database operations (append, read)
+- JSON schema validation
+- Message routing and response handling
+- P2P data synchronization
+
+---
 
 ### Run the Server
 

@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!DOC    <title>Box Baby Theme - Hypercore Test</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">tml>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -245,15 +247,138 @@
         .hypercore-info strong {
             color: var(--box-gold);
         }
+
+        /* 📱 Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                background-attachment: scroll; /* Better performance on mobile */
+            }
+
+            body::before {
+                background-size: 150px 150px; /* Smaller palm trees */
+            }
+
+            .container {
+                margin: 1rem auto;
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+                max-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+
+            .header::before {
+                font-size: 32px;
+                top: -5px;
+                right: -5px;
+            }
+
+            .box-field {
+                margin-bottom: 1.25rem;
+            }
+
+            .box-field .control-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .box-field input[type="text"],
+            .box-field textarea {
+                padding: 0.65rem 0.85rem;
+                font-size: 16px; /* Prevent iOS zoom */
+                border-radius: 6px;
+            }
+
+            .box-field textarea {
+                min-height: 100px;
+            }
+
+            .btn-primary {
+                width: 100%;
+                padding: 0.85rem 1rem;
+                font-size: 1rem;
+                margin-top: 0.5rem;
+            }
+
+            .btn-secondary {
+                width: 100%;
+                padding: 0.65rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hypercore-info {
+                padding: 0.85rem;
+                font-size: 0.8rem;
+            }
+
+            .record-card {
+                padding: 0.85rem;
+                margin-bottom: 0.85rem;
+            }
+
+            .record-card h4 {
+                font-size: 0.8rem;
+            }
+
+            .record-card pre {
+                font-size: 0.75rem;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+            }
+
+            .success-message,
+            .error-message {
+                padding: 0.85rem;
+                font-size: 0.85rem;
+            }
+
+            .success-message h3,
+            .error-message h3 {
+                font-size: 1rem;
+            }
+        }
+
+        /* 🖥️ Large Desktop Styles */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 900px;
+                padding: 2.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .box-field input[type="text"],
+            .box-field textarea {
+                font-size: 1.1rem;
+                padding: 0.85rem 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <!-- 🔍 Debug indicator to show HTML is loading -->
+    <div id="debug-indicator" style="position: fixed; top: 10px; right: 10px; background: lime; color: black; padding: 10px; z-index: 9999; border-radius: 5px; font-weight: bold;">
+        🌴 HTML LOADED ✅
+    </div>
+    
+    <div id="root">
+        <!-- 🔍 Fallback content to show if React doesn't load -->
+        <div style="text-align: center; padding: 50px; color: white; background: rgba(0,0,0,0.8); border-radius: 10px; margin: 50px;">
+            <h2>🔄 Loading PearForm...</h2>
+            <p>If this message persists, there may be an issue with React or the form initialization.</p>
+        </div>
+    </div>
 
     <script>
-        const { useState, useEffect } = React;
-        const Form = JSONSchemaForm.default;
-
+        console.log('📋 FORM DEBUG: Script section starting...');
+        console.log('📋 FORM DEBUG: Window loaded');
+        
         const schema = {
             "type": "object",
             "title": "Keet Bots API Early Access",
@@ -296,149 +421,390 @@
             }
         };
 
-        function App() {
-            const [formData, setFormData] = useState({});
-            const [submitting, setSubmitting] = useState(false);
-            const [message, setMessage] = useState(null);
-            const [records, setRecords] = useState([]);
-            const [hypercoreInfo, setHypercoreInfo] = useState(null);
+        // 🌴 Pear v2 Compatibility Layer (Bridge-based worker communication)
+        // Auto-detect if running in Pear v2 runtime with worker support
+        const isPearV2 = typeof Pear !== 'undefined' && Pear.worker;
+        let messageId = 0;
+        let workerPipe = null;
+        const pendingMessages = new Map();
 
-            const loadRecords = async () => {
-                try {
-                    const res = await fetch('/api/records');
-                    const data = await res.json();
-                    if (data.success) {
-                        setRecords(data.records);
-                        console.log('📚 Loaded records:', data.records);
+        // Set up Pear v2 worker piping directly in HTML
+        if (isPearV2) {
+            console.log('🔧 Initializing Pear v2 worker piping...');
+            
+            window.setupWorkerPiping = () => {
+                console.log('🔧 Setting up worker piping via Pear.worker...');
+                
+                // Create worker pipe using Pear.worker API
+                workerPipe = Pear.worker.run('./worker.js', [])
+                
+                // Listen for worker responses
+                workerPipe.on('data', (response) => {
+                    console.log('📥 FRONTEND: Received worker response - ID:', response.id);
+                    console.log('📋 FRONTEND: Response data:', response);
+                    
+                    if (pendingMessages.has(response.id)) {
+                        const { resolve } = pendingMessages.get(response.id);
+                        pendingMessages.delete(response.id);
+                        resolve(response);
+                    } else {
+                        console.warn(`⚠️  FRONTEND: No pending message found for ID: ${response.id}`);
                     }
-                } catch (error) {
-                    console.error('Error loading records:', error);
-                }
-            };
+                });
+                
+                return workerPipe;
+            }
+        } else {
+            console.log('🔧 Pear v2 not available, using fallback');
+            window.setupWorkerPiping = () => {
+                console.log('🔧 Fallback worker piping setup');
+                return null;
+            }
+        }
 
-            const loadHypercoreInfo = async () => {
-                try {
-                    const res = await fetch('/api/info');
-                    const data = await res.json();
-                    setHypercoreInfo(data);
-                    console.log('📊 Hypercore info:', data);
-                } catch (error) {
-                    console.error('Error loading hypercore info:', error);
-                }
-            };
-
-            useEffect(() => {
-                loadRecords();
-                loadHypercoreInfo();
-            }, []);
-
-            const handleSubmit = async ({formData}) => {
-                console.log('📝 Submitting form data:', formData);
-                setSubmitting(true);
-                setMessage(null);
-
-                try {
+        // Unified API wrapper - works with both v1 (HTTP) and v2 (Pear worker)
+        const apiCall = async (action, data = null) => {
+            console.log(`🌐 FRONTEND: Making API call - Action: ${action}, Using: ${isPearV2 ? 'Pear Worker' : 'HTTP fetch'}`);
+            
+            if (isPearV2 && workerPipe) {
+                // Pear v2: Send message to worker
+                return new Promise((resolve, reject) => {
+                    const id = ++messageId;
+                    pendingMessages.set(id, { resolve, reject });
+                    
+                    console.log(`📤 FRONTEND: Sending to worker - ID: ${id}, Action: ${action}`);
+                    
+                    // Send message to worker
+                    workerPipe.write({ action, data, id });
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        if (pendingMessages.has(id)) {
+                            pendingMessages.delete(id);
+                            reject(new Error('Request timeout'));
+                        }
+                    }, 10000);
+                });
+            } else {
+                // Pear v1: Use HTTP fetch
+                if (action === 'submit') {
                     const response = await fetch('/api/submit', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
+                        body: JSON.stringify(data)
                     });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        console.log('✅ Submission successful:', result);
-                        setMessage({
-                            type: 'success',
-                            text: `Success! Record #${result.record.id} added to Hypercore. Total records: ${result.totalRecords}`
-                        });
-                        setFormData({});
-                        await loadRecords();
-                        await loadHypercoreInfo();
-                    } else {
-                        console.error('❌ Validation failed:', result.errors);
-                        setMessage({
-                            type: 'error',
-                            text: 'Validation failed: ' + JSON.stringify(result.errors, null, 2)
-                        });
-                    }
-                } catch (error) {
-                    console.error('❌ Error submitting:', error);
-                    setMessage({
-                        type: 'error',
-                        text: 'Error: ' + error.message
-                    });
-                } finally {
-                    setSubmitting(false);
+                    return await response.json();
+                } else if (action === 'getRecords') {
+                    const response = await fetch('/api/records');
+                    return await response.json();
+                } else if (action === 'getInfo') {
+                    const response = await fetch('/api/info');
+                    return await response.json();
                 }
-            };
+            }
+        };
 
-            return React.createElement('div', { className: 'container' },
-                React.createElement('div', { className: 'header' },
-                    React.createElement('h1', null, schema.title),
-                    React.createElement('p', null, schema.description)
-                ),
-
-                hypercoreInfo && React.createElement('div', { className: 'hypercore-info' },
-                    React.createElement('strong', null, '💾 Hypercore Info'),
-                    React.createElement('div', null, `Records: ${hypercoreInfo.length}`),
-                    React.createElement('div', null, `Key: ${hypercoreInfo.key.slice(0, 32)}...`)
-                ),
-
-                message && React.createElement('div', {
-                    className: message.type === 'success' ? 'success-message' : 'error-message'
-                },
-                    React.createElement('h3', null, 
-                        message.type === 'success' ? '✅ Success!' : '❌ Error'
-                    ),
-                    React.createElement('pre', null, message.text)
-                ),
-
-                React.createElement(Form, {
-                    schema: schema,
-                    uiSchema: uiSchema,
-                    formData: formData,
-                    onChange: ({formData}) => setFormData(formData),
-                    onSubmit: handleSubmit
-                },
-                    React.createElement('div', { style: { textAlign: 'right', marginTop: '1rem' } },
-                        React.createElement('button', {
-                            type: 'submit',
-                            className: 'btn-primary',
-                            disabled: submitting,
-                            style: { display: 'inline-block' }
-                        }, submitting ? 'Submitting...' : 'Submit to Hypercore')
-                    )
-                ),
-
-                React.createElement('div', { className: 'records-section' },
-                    React.createElement('h2', null, `📚 Stored Records (${records.length})`),
-                    React.createElement('button', {
-                        className: 'btn-secondary',
-                        onClick: loadRecords,
-                        style: { marginBottom: '1rem' }
-                    }, '🔄 Refresh Records'),
-                    
-                    records.length === 0 ?
-                        React.createElement('p', { style: { textAlign: 'center', opacity: 0.7 } }, 
-                            'No records yet. Submit the form to add data to Hypercore.'
-                        ) :
-                        records.map((record, index) =>
-                            React.createElement('div', { key: index, className: 'record-card' },
-                                React.createElement('h4', null, 
-                                    `Record #${record.id} - ${new Date(record.timestamp).toLocaleString()}`
-                                ),
-                                React.createElement('pre', null, 
-                                    JSON.stringify(record.data, null, 2)
-                                )
-                            )
-                        )
-                )
-            );
+        if (isPearV2) {
+            console.log('🌴 PearForm v2 frontend initialized with Pear.worker communication');
+        } else {
+            console.log('🌴 PearForm v1 frontend initialized with HTTP API');
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App));
+        // 🔍 Debug logging for form elements
+        console.log('📋 FORM DEBUG: Schema loaded:', schema);
+        console.log('📋 FORM DEBUG: UI Schema loaded:', uiSchema);
+        console.log('📋 FORM DEBUG: Document ready state:', document.readyState);
+        console.log('📋 FORM DEBUG: Root element exists:', !!document.getElementById('root'));
+
+        // Simple React-like functionality without external dependencies
+        function createSimpleComponent() {
+            const container = document.getElementById('root');
+            if (!container) {
+                console.error('📋 FORM DEBUG: No root element found');
+                return;
+            }
+
+            // Clear any loading message
+            container.innerHTML = '';
+
+            // Create form container
+            const formContainer = document.createElement('div');
+            formContainer.className = 'container';
+            
+            // Add header
+            const header = document.createElement('div');
+            header.className = 'header';
+            header.innerHTML = `
+                <h1>${schema.title}</h1>
+                <p>${schema.description}</p>
+            `;
+            formContainer.appendChild(header);
+
+            // Add hypercore info section
+            const infoSection = document.createElement('div');
+            infoSection.id = 'hypercore-info';
+            infoSection.className = 'hypercore-info';
+            infoSection.innerHTML = '<strong>💾 Loading Hypercore Info...</strong>';
+            formContainer.appendChild(infoSection);
+
+            // Add form fields
+            const formElement = document.createElement('form');
+            formElement.id = 'pear-form';
+            
+            // Create form fields based on schema
+            Object.entries(schema.properties).forEach(([key, property]) => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = 'box-field';
+                
+                const label = document.createElement('label');
+                label.textContent = property.title || key;
+                fieldDiv.appendChild(label);
+                
+                let input;
+                if (property.type === 'string' && property.maxLength > 100) {
+                    input = document.createElement('textarea');
+                    input.rows = 4;
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                }
+                
+                input.name = key;
+                input.placeholder = uiSchema[key]?.['ui:placeholder'] || '';
+                input.required = schema.required?.includes(key) || false;
+                
+                fieldDiv.appendChild(input);
+                formElement.appendChild(fieldDiv);
+            });
+
+            // Add submit button
+            const submitDiv = document.createElement('div');
+            submitDiv.style.textAlign = 'right';
+            submitDiv.style.marginTop = '1rem';
+            
+            const submitButton = document.createElement('button');
+            submitButton.type = 'submit';
+            submitButton.className = 'btn-primary';
+            submitButton.textContent = 'Submit to Hypercore';
+            
+            submitDiv.appendChild(submitButton);
+            formElement.appendChild(submitDiv);
+            
+            formContainer.appendChild(formElement);
+
+            // Add message area
+            const messageArea = document.createElement('div');
+            messageArea.id = 'message-area';
+            formContainer.appendChild(messageArea);
+
+            // Add records section
+            const recordsSection = document.createElement('div');
+            recordsSection.className = 'records-section';
+            recordsSection.innerHTML = `
+                <h2>� Stored Records</h2>
+                <button type="button" id="refresh-btn" class="btn-secondary" style="margin-bottom: 1rem;">🔄 Refresh Records</button>
+                <div id="records-container">Loading records...</div>
+            `;
+            formContainer.appendChild(recordsSection);
+
+            container.appendChild(formContainer);
+
+            // Set up event handlers
+            setupEventHandlers();
+            
+            // Load initial data
+            loadHypercoreInfo();
+            loadRecords();
+            
+            console.log('📋 FORM DEBUG: Simple form component created successfully');
+        }
+
+        // Vanilla JavaScript functions to replace React state management
+        let formData = {};
+        let submitting = false;
+        let message = null;
+        let records = [];
+        let hypercoreInfo = null;
+
+        function setupEventHandlers() {
+            const form = document.getElementById('pear-form');
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            if (form) {
+                form.addEventListener('submit', handleSubmit);
+            }
+            
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', loadRecords);
+            }
+        }
+
+        async function loadRecords() {
+            console.log('📋 FORM DEBUG: Loading records...');
+            try {
+                const data = await apiCall('getRecords');
+                if (data.success) {
+                    records = data.records;
+                    console.log('📚 Loaded records:', data.records);
+                    console.log('📋 FORM DEBUG: Records state updated, count:', data.records.length);
+                    updateRecordsDisplay();
+                }
+            } catch (error) {
+                console.error('Error loading records:', error);
+            }
+        }
+
+        async function loadHypercoreInfo() {
+            console.log('📋 FORM DEBUG: Loading Hypercore info...');
+            try {
+                const data = await apiCall('getInfo');
+                if (data.success) {
+                    hypercoreInfo = data.info;
+                    console.log('📊 Hypercore info:', data.info);
+                    console.log('📋 FORM DEBUG: Hypercore info state updated');
+                } else {
+                    // v1 format (direct info)
+                    hypercoreInfo = data;
+                    console.log('📊 Hypercore info:', data);
+                    console.log('📋 FORM DEBUG: Hypercore info state updated (v1 format)');
+                }
+                updateHypercoreInfoDisplay();
+            } catch (error) {
+                console.error('Error loading hypercore info:', error);
+            }
+        }
+
+        function updateHypercoreInfoDisplay() {
+            const infoSection = document.getElementById('hypercore-info');
+            if (infoSection && hypercoreInfo) {
+                infoSection.innerHTML = `
+                    <strong>💾 Hypercore Info</strong>
+                    <div>Records: ${hypercoreInfo.length}</div>
+                    <div>Key: ${hypercoreInfo.key.slice(0, 32)}...</div>
+                `;
+            }
+        }
+
+        function updateRecordsDisplay() {
+            const recordsContainer = document.getElementById('records-container');
+            if (!recordsContainer) return;
+
+            if (records.length === 0) {
+                recordsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">No records yet. Submit the form to add data to Hypercore.</p>';
+            } else {
+                recordsContainer.innerHTML = records.map((record, index) => `
+                    <div class="record-card">
+                        <h4>Record #${record.id} - ${new Date(record.timestamp).toLocaleString()}</h4>
+                        <pre>${JSON.stringify(record.data, null, 2)}</pre>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            console.log('📋 FORM DEBUG: Submit handler triggered');
+            
+            // Collect form data
+            const form = event.target;
+            const formDataObj = {};
+            
+            // Get all form inputs
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.name) {
+                    formDataObj[input.name] = input.value;
+                }
+            });
+            
+            console.log('📝 Submitting form data:', formDataObj);
+            
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...';
+            }
+
+            try {
+                const result = await apiCall('submit', formDataObj);
+
+                if (result.success) {
+                    console.log('✅ Submission successful:', result);
+                    showMessage('success', `Success! Record #${result.record.id} added to Hypercore. Total records: ${result.totalRecords}`);
+                    
+                    // Clear form
+                    inputs.forEach(input => input.value = '');
+                    
+                    // Reload data
+                    await loadRecords();
+                    await loadHypercoreInfo();
+                } else {
+                    console.error('❌ Validation failed:', result.errors);
+                    showMessage('error', 'Validation failed: ' + JSON.stringify(result.errors, null, 2));
+                }
+            } catch (error) {
+                console.error('❌ Error submitting:', error);
+                showMessage('error', 'Error: ' + error.message);
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Submit to Hypercore';
+                }
+            }
+        }
+
+        function showMessage(type, text) {
+            const messageArea = document.getElementById('message-area');
+            if (!messageArea) return;
+
+            messageArea.innerHTML = `
+                <div class="${type === 'success' ? 'success-message' : 'error-message'}">
+                    <h3>${type === 'success' ? '✅ Success!' : '❌ Error'}</h3>
+                    <pre>${text}</pre>
+                </div>
+            `;
+
+            // Auto-hide message after 5 seconds
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // DOM ready check and initialization
+        if (document.readyState === 'loading') {
+            console.log('📋 FORM DEBUG: Document still loading, waiting for DOMContentLoaded...');
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('📋 FORM DEBUG: DOMContentLoaded fired, initializing form...');
+                initializeForm();
+            });
+        } else {
+            console.log('📋 FORM DEBUG: Document already loaded, initializing form immediately...');
+            initializeForm();
+        }
+
+        function initializeForm() {
+            console.log('📋 FORM DEBUG: Starting form initialization...');
+            const rootElement = document.getElementById('root');
+            console.log('📋 FORM DEBUG: Root element found:', !!rootElement);
+            
+            if (!rootElement) {
+                console.error('📋 FORM DEBUG: ERROR - Root element not found!');
+                return;
+            }
+            
+            try {
+                createSimpleComponent();
+                console.log('📋 FORM DEBUG: Form initialized successfully');
+                
+                // Initialize worker piping if available
+                if (window.setupWorkerPiping) {
+                    workerPipe = window.setupWorkerPiping();
+                    console.log('📋 FORM DEBUG: Worker piping initialized:', !!workerPipe);
+                }
+            } catch (error) {
+                console.error('📋 FORM DEBUG: ERROR during form initialization:', error);
+            }
+        }
     </script>
 </body>
 </html>

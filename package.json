@@ -1,14 +1,25 @@
 {
-  "name": "island-wealth-hypercore-test",
+  "name": "test_ui_node",
   "version": "1.0.0",
-  "description": "Test app for Island Wealth form with Hypercore backend",
   "type": "module",
-  "main": "server.js",
+  "main": "index.html",
+  "description": "PearForms: P2P forms with custom stylesheets on Hypercore",
   "scripts": {
+    "start:v1": "node server.js",
+    "start:v2": "pear run -d .",
     "start": "node server.js"
   },
   "dependencies": {
-    "hypercore": "^10.37.0",
-    "ajv": "^8.12.0"
+    "ajv": "^8.12.0",
+    "hypercore": "^10.37.7",
+    "pear-bridge": "latest",
+    "pear-electron": "latest",
+    "pear-interface": "latest",
+    "pear-message": "^1.0.0",
+    "pear-messages": "^1.0.5"
+  },
+  "pear": {
+    "name": "pearform",
+    "type": "desktop"
   }
 }
